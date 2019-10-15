@@ -74,13 +74,48 @@ class Thick_Lens ():
         setattr(self,'sys_mat',A)       # create attr
         return A                        # return system matrix
 
+class Thin_Lens ():
+    """
+    Creates Thin Lens Class Object
+    --------------------------------
+    name (str) : Name to indentify object
+    x (float) : Position on x-axis where center of lens sits
+    ref_idx (float) : Index of Refraction of lens object
+    --------------------------------
+    """
+    def __init__(self,name,f,x,red_idx):
+        """ Initiaialize Thin Lens Class Object """
+        self.name = name        # name of object
+        self.f = f              # focal length
+        self.f
+        self.x = x              # horizontal position
+        self.n = ref_idx        # index of refraction
+
+    def image_distance(self,obj):
+        """ Reflect ray """
+        d = self.x - obj.x              # distance between obj & lens
+        si = (1/self.f - 1/d)**-1       # image distance
+        setattr(self,'si',si)           # set attribute as image distance
+        return self.x + si              # return image distance (from origin)
+    
+class Object_or_Image ():
+    """
+    Creates Object to image Class Object 
+    --------------------------------
+    name (str) : Name to indentify object
+    x (float) : Position on x-axis where center of lens sits
+    height (float) : height of object/image
+    --------------------------------
+
+    """
+    def __init__(self,name,x,height):
+        """ Initialize Object\Image Class Object """
+        self.name = name            # name of object
+        self.x = x                  # position of object/image
+        self.h = height             # height of object/image
 
 
-            #### FUNCTION DEFINITIONS ####
-
-def free_space (x):
-    """ Compute Transfer matrix for distance 'd' in free space """
-    return np.array([1,x,0,1],dtype=float).reshape(2,2)     # return the matrix
+            #### FUNCTION DEFINTIONS ####
 
  
 
