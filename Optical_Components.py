@@ -80,23 +80,49 @@ class Thin_Lens ():
     --------------------------------
     name (str) : Name to indentify object
     x (float) : Position on x-axis where center of lens sits
-    ref_idx (float) : Index of Refraction of lens object
+    ref_idx (float) : index of refraction of thin lens
+    R1 (float) : radius of curvature 1 of lens
+    R2 (float) : radius of curvature 2 of lens
     --------------------------------
     """
-    def __init__(self,name,f,x,red_idx):
+    def __init__(self,name,x,ref_idx,R1,R2):
         """ Initiaialize Thin Lens Class Object """
-        self.name = name        # name of object
-        self.f = f              # focal length
-        self.f
-        self.x = x              # horizontal position
-        self.n = ref_idx        # index of refraction
+        self.name = name                # name of object
+        self.x = x                      # horizontal position
+        self.n = ref_idx                # refraction idx
+        self.R1 = R1                    # rad of curve 1
+        self.R2 = R2                    # rad of curve 2
+        self.f = self.focus()           # focal length
+        self.type = self.lens_type()    # lens type
+
+    def focus (self):
+        """ Compute magnitude of focus from center of thin lens """
+        val = (self.n - 1)*(1/self.R1-1/self.R2)
+        try:                    # if focal length != 0
+            return 1/val        # return focal length
+        except:                 # if failure
+            return np.infty     # infinite focal length
+
+    def lens_type(self):
+        """ Determine lens type based on radii of curvature """
+        if (self.R1 > 0) and (self.R2 < 0):
+            return 'Biconvex'           # biconvex lens
+        if (self.R1 > 1e6) and (self.R2 < 0):
+            return 'Planar - Convex'    # planar convex lens
+        if (self.R1 > 0) and (self.R2 > 0):
+            return 'Meniscus - Convex'  # meniscus convex len
+        if (self.R1 < 0) and (self.R2 > 0):
+            return 'Biconcave'          # bicondave lens
+        if (self.R1 > 1e6) and (self.R2 > 0):
+            return 'Planar - Concave'   # planar concave lens
+        if (self.R1 > 0) and (self.R2 > 0):
+            return 'Meniscus Concave'   # meniscus concave lens
 
     def image_distance(self,obj):
-        """ Reflect ray """
-        d = self.x - obj.x              # distance between obj & lens
+        """ Compute image distance from lens instance """
+        d = obj.x - self.x              # distance between obj & lens
         si = (1/self.f - 1/d)**-1       # image distance
-        setattr(self,'si',si)           # set attribute as image distance
-        return self.x + si              # return image distance (from origin)
+        return si                       # return image distance 
     
 class Object_or_Image ():
     """
@@ -114,8 +140,68 @@ class Object_or_Image ():
         self.x = x                  # position of object/image
         self.h = height             # height of object/image
 
+    def image_type (self):
+        """ Determine if image is real or virtual """
+        pass
+
 
             #### FUNCTION DEFINTIONS ####
 
- 
+def magnification (si,so):
+    """ Compute Transverse Magnification Factor """
+    return -si/so                   # return mag fact
 
+def Print_System_Lenses (lenses):
+    """ Print all System Lens Parameters """
+    for I in range (len(lenses)):               # for each lens in the system
+        print("================================")
+        print("Component Number: "+str(I+1))
+        print("\tName:",lenses[I].name)
+        print("\tComponent type:",lenses[I].type+" lens")
+        print("\tX-Axis Postion:",lenses[I].x)
+        print("\t1st Curvature radius:",lenses[I].R1)
+        print("\t2nd Curvature radius:",lenses[I].R2)
+        print("\tFocal length:",lenses[I].f)
+        print("")
+
+ 
+def Plot_System (lenses,objects,title,save=False,show=False):
+    """ Produce Matplotlib Visualization of Optical System """
+            #### Initialize Figure ####
+    plt.figure(figsize=(20,8))                  # create and size figure
+    plt.title(title,size=40,weight='bold')      # title and format
+    plt.xlabel("X-Axis Position [cm]",\
+        size=20,weight='bold')                  # label x axis
+    plt.ylabel("y-Axis Position [cm]",\
+        size=20,weight='bold')                  # label y axis
+            #### Plot all Lense ####
+    for lens in lenses:             # for each optical lens
+        try:                        # attempt:
+            fs = [(lens.x-lens.f),(lens.x+lens.f)]
+            plt.plot(fs,[0,0],'o',
+                     label=str(lens.name)+' Foci')
+            plt.plot([lens.x,lens.x],[+100,-100],
+                     linewidth=4)
+            plt.annotate(str(lens.name),(lens.x,100))
+        except:
+            print("\n\tERROR! - Could not plot object",lens.name)
+
+    for obj in objects:
+        try:                        # attempt:          
+            plt.plot([obj.x,obj.x],[obj.h,0])
+            plt.annotate(str(obj.name),(obj.x,obj.h))
+        except:                     # if failure
+            print("\n\tERROR! - Could not plot object",obj.name)
+    
+    comps = np.append(lenses,objects)
+    xmin = np.min([x.x for x in comps])-10
+    xmax = np.max([x.x for x in comps])+10
+
+    plt.hlines(y=0,xmin=xmin,xmax=xmax,color='black')
+    plt.legend()
+    plt.grid()
+    if save == True:
+        plt.savefig(str(title)+'.png')
+    if show == True:
+        plt.show()
+    plt.close()

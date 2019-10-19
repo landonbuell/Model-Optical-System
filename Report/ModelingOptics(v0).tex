@@ -9,6 +9,8 @@
 \usepackage{graphicx}
 \usepackage{multicol}
 \usepackage[left=2.5cm,right=2.5cm,top=2.5cm]{geometry}
+\usepackage{enumitem}
+\setitemize{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
 
 % ==================
 
@@ -30,36 +32,154 @@ Modeling a Simple Optical System\\
 % ======================================================
 
 \section{Abstract}
+\paragraph*{}A classical optics, a system of thin lenses can be solved analytically by use of several pertinent equations and geometric principles. As these systems become increasingly complex, the volume of math and geometry require increases drastically, meaning that a system becomes more and more prone to calculation error. In order to combat this, I have developed a a program that will algorithmically evaluate the components of an optical system. Component $m$ will take object/image $m-1$ and use the \textit{thin lens law} to produce object/image $m$. The in a system with $N$ components, the image $m = N$ will be the final image as produced by the entire system.
 
 % ======================================================
 
 \section{Introduction}
-\paragraph*{}This project will see the creation of a python 3 program that can efficiently and accurately model a simple, one - dimensional optical system. For simplicity, the light source, or object that is \textit{being} imaged, will always be placed at the origin of a coordinate system. All other optical components in the system will be confined to the positive \textit{x-axis} between $x = 0$ and $x = 100$. Additionally, the entire system will be immersed in air where the index of refraction will be assumed as $n=1$.
+\paragraph*{}This project will see the creation of a python 3 program that can efficiently and accurately model a simple, ideal, one - dimensional optical system. All components in the system will be assumed to adhere to all classical models and equations. Due to complexity, all possible systems may not be physically realistic. The legitimacy of each simulation is bound only by mathematical rules.
 \paragraph*{}The program will revolve around a few basic optical principles as learned from class (PHYS 708 - Optics) as well as from various other references. For all computations, light will be assumed to be an perfectly idealized geometric ray. The exact wavelength of the ray will not change the index of refraction of the object as well.
 
+\pagebreak
 % ======================================================
 
 \section{General Methodology}
-\paragraph*{}The functionality of this project will rely on object-oriented programming. 
+\paragraph*{}The functionality of this project will rely on object-oriented programming. Additionally, all mathematics are based on classical optical laws. The needed ones are: \\
+
+The \textbf{Lens Maker's Equation}
+\begin{equation}
+\label{lens maker}
+\frac{1}{f} = (n_l - 1)\bigg(\frac{1}{R_1} - \frac{1}{R_2}\bigg)
+\end{equation}
+
+\textbf{Gaussian Lens Formula}
+\begin{equation}
+\label{gauss}
+\frac{1}{s_o} + \frac{1}{s_i} = \frac{1}{f}
+\end{equation}
+
+\textbf{Transverse Magnification factor}
+\begin{equation}
+\label{mag fact}
+M_T = -\frac{s_i}{s_o}
+\end{equation}
+
+\paragraph*{} In all cases, the previous parameters are defined:
+\begin{itemize}
+\item[•]$f$ - lens focal length from center of lens (cm)
+\item[•]$n_l$ - index of refraction of lens
+\item[•]$R_1$ - Radius of curvature of left side of lens (cm)
+\item[•]$R_2$ - Radius of curvature of right side of lens (cm)
+\item[•]$s_o$ - object distance from center of lens (cm)
+\item[•]$s_i$ - image distance from center of lens (cm)
+\item[•]$M_T$ - Transverse Magnification factor
+\end{itemize}
 
 % ==================
 
 \subsection{Optical Components Object}
-\paragraph*{}The computational part of this program will involve the construction of a \textit{class} object that will contain all attributes that are relevant to modeling the system. For a thick lens, this will involve a central position, two radii of curvature, an index of refraction as so forth. Each component of the system will be assumed to be perfectly ideal, containing no distortions of any sort.
+\paragraph*{}The computational part of this program will involve the construction of a \textit{class} object that will contain all attributes that are relevant to modeling the system.
+\paragraph*{}The main class object used will be the \textit{Thin Lens} object. Each lens in the system will be an additional instance of this class. It will be defined:
+\begin{verbatim}
+class Thin_Lens ():
+    """
+    Creates Thin Lens Class Object
+    --------------------------------
+    name (str) : Name to indentify object
+    x (float) : Position on x-axis where center of lens sits
+    ref_idx (float) : index of refraction of thin lens
+    R1 (float) : radius of curvature 1 of lens
+    R2 (float) : radius of curvature 2 of lens
+    --------------------------------
+    """
+\end{verbatim}
+Attributes: \textit{component name}, \textit{component position},\textit{index of refraction}, \textit{Radius of Curvature 1}, \textit{Radius of Curvature 2}, \textit{Component Focal length}, \textit{lense component type}.
+\subsubsection*{Initialization}
+\paragraph*{}As per convention, the optical component object will begin with an \textbf{\_\_init\_\_()} method to set all object attributes. In python, this method takes the form:
+\begin{verbatim}
+def __init__(self,name,x,ref_idx,R1,R2):
+    """ Initiaialize Thin Lens Class Object """
+    self.name = name            # name of object
+    self.x = x                  # horizontal position
+    self.n = ref_idx            # refraction idx
+    self.R1 = R1                # rad of curve 1
+    self.R2 = R2                # rad of curve 2
+    self.f = self.focus()       # focal length
+    self.type = self.lens_type()# lens type
+\end{verbatim}
+\paragraph*{}The method \textit{self.focus()} comutes the focal distance of the lens class instance based on the \textit{Lens Maker's Equation}, Equation (\ref{lens maker}). The \textit{self.lens\_type()} method determines the type of thin lense based on the two radii of curvature, as defined below:
+
+\subsubsection*{Other Methods}
+
+\paragraph*{}The \textit{Thin\_Lens()} class must have method that allows for the computation of the image distance as measured from the center of the thin lens.  This will be computed as per the \textit{Gaussian Lens Formula}, Equation (\ref{gauss}). It is defined:
+\begin{verbatim}
+def image_distance(self,obj):
+    """ Compute image distance from lens instance """
+    d = obj.x - self.x              # distance between obj & lens
+    si = (1/self.f - 1/d)**-1       # image distance
+    return si                       # return image distance 
+\end{verbatim}
+\paragraph*{}Using this image distance $s_i$, and the horizontal position of the center of the lens from the origin of the coordinate system. Note that this method uses the parameter \textit{obj} which is the class object that represents the physical image or object.
+
+\paragraph*{}The textit{Thin\_Lens()} class also has a method for determining it's lens type. As defined by standard optical lens conventions, The method uses the radii of curvature and a series of if statements. it is defined:
+\begin{verbatim}
+def lens_type(self):
+    """ Determine lens type based on radii of curvature """
+    if (self.R1 > 0) and (self.R2 < 0):
+        return 'Biconvex'           # biconvex lens
+    if (self.R1 > 1e6) and (self.R2 < 0):
+        return 'Planar - Convex'    # planar convex lens
+    if (self.R1 > 0) and (self.R2 > 0):
+        return 'Meniscus - Convex'  # meniscus convex len
+    if (self.R1 < 0) and (self.R2 > 0):
+        return 'Biconcave'          # bicondave lens
+    if (self.R1 > 1e6) and (self.R2 > 0):
+        return 'Planar - Concave'   # planar concave lens
+    if (self.R1 > 0) and (self.R2 > 0):
+        return 'Meniscus Concave'   # meniscus concave lens
+\end{verbatim}
+\paragraph*{}The simplification has been made where if the radius of curvature of a lens is greater than $10^{6}$ units, it is treated as if to have an 'infinite' radius of curvature - i.e. it is a flat surface. This was made to handle large values, and potentially infinite ones.
 
 % ==================
 
-\subsection{Geometric Ray Object}
-\paragraph*{}The path that the ray takes through the optical system is modeled as a one dimensional \textit{numpy array}. The floating point numbers contained within the arrays track the rays vertical position above the x-axis corresponding to evenly spaced x-value increments. All rays will be treated as ideal one-dimensional paths, and the exactly wavelength of frequency of the ray will not change any properties of the ray.
+\subsection{Object \& Image Object}
+\paragraph*{}The image of each lense will 
 
 % ==================
 
 \subsection{Visualization}
-\paragraph*{}Once the system has been tracked computationally, a visualization is produced. This visualization is done in Python's \textit{matplotlib.pyplot} module and contains images of all optical components to scale, and the path that certain rays will take.
+\paragraph*{}Once the system has been tracked computationally, a visualization is produced. This visualization is done in Python's \textit{matplotlib.pyplot} module and contains the position of all optical components, position of respective focii and each successive image as produced by the system. All components are labeled and visualized to scale. The plot will be displayed when the system is finished with all computations. Note that radii of curvature of each lens are not considered in visualization.
+\paragraph*{}In addition to the plot, the details for each component and object or image will also be printed out concisely for the ease of human reading. Again, this will happen at the end of the full computation cycle.
 
 % ======================================================
+\pagebreak
 
 \section{Example System \#1}
+\paragraph*{}The first test of the program will be a simple system, containing two lenses. The program prints out the details of each lens:
+\begin{verbatim}
+================================
+Component Number: 1
+        Name: Lens 1
+        Component type: Biconvex lens
+        X-Axis Postion: 100
+        1st Curvature radius: 20
+        2nd Curvature radius: -20
+        Focal length: 20.0
+
+================================
+Component Number: 2
+        Name: Lens 2
+        Component type: Biconvex lens
+        X-Axis Postion: 130
+        1st Curvature radius: 20
+        2nd Curvature radius: -20
+        Focal length: 20.0
+\end{verbatim}
+\paragraph*{}And finally, the visualiztion of the system:
+\begin{center}
+\includegraphics[scale=0.3]{Simple_Optical_System_1}
+\end{center}
+\paragraph*{}The legitimacy of the computation can be confirmed by hand or with another program if desired.
 
 % ======================================================
 
@@ -73,7 +193,6 @@ Modeling a Simple Optical System\\
 Due to the lack of detailed error handling, is it possible to attempt to model physically unrealistic systems. These may included (but not limited to): over lapping lenses, infinite or undefined values, etc.
 \item[•]\textbf{Python Modules}\\
 Required Python Modules: Numpy, Scipy, Matplotlib
-
 \end{itemize}
 
 % ======================================================
@@ -83,7 +202,9 @@ Required Python Modules: Numpy, Scipy, Matplotlib
 % ======================================================
 
 \section{References}
-
+\begin{itemize}
+\item[•]“Geometrical Optics.” Optics, by Eugene Hecht, 5th ed., Pearson, 2017, pp. 151–246.
+\end{itemize}
 % ======================================================
 
 \end{document}
