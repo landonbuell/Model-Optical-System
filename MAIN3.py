@@ -16,9 +16,12 @@ import Optical_Components as OC
 if __name__ == '__main__':
     
             #### ESTABLISH SYSTEM OPTICAL COMPONENTS ####
-    lenses = np.array([ OC.Thin_Lens('Lens 1',100,1.5,20,-20),
-                        OC.Thin_Lens('Lens 2',130,1.5,20,-20)])        
-    objects = np.array([OC.Object_or_Image('Arrow_0',90,100,0)])       
+    lenses = np.array([ OC.Thin_Lens('Lens 1',50.,1.5,+20,-20),
+                        OC.Thin_Lens('Lens 2',100,1.2,-40,+40),
+                        OC.Thin_Lens('Lens 3',160,2.0,+10,-20),                     
+                        OC.Thin_Lens('Lens 4',220,1.5,+20,-20)])     
+    
+    objects = np.array([OC.Object_or_Image('Arrow_0',0,100,0)])       
 
             #### ITTERATE THROUGH SYSTEM ####
     for I in range (len(lenses)):                   # in the optical system
@@ -38,4 +41,6 @@ if __name__ == '__main__':
             #### PRINT SYSTEM DETAILS & PLOT SYSTEM ####
 
     OC.Print_System_Lenses(lenses)
-    OC.Plot_System(lenses,objects,'Simple_Optical_System_1',save=True,show=True)
+    OC.Print_System_Object(objects[0])
+    OC.Print_System_Object(objects[-1])
+    OC.Plot_System(lenses,objects,'Simple_Optical_System_2',save=True,show=True)

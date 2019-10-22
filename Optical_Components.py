@@ -97,11 +97,13 @@ class Thin_Lens ():
 
     def focus (self):
         """ Compute magnitude of focus from center of thin lens """
-        val = (self.n - 1)*(1/self.R1-1/self.R2)
-        try:                    # if focal length != 0
-            return 1/val        # return focal length
-        except:                 # if failure
-            return np.infty     # infinite focal length
+        try:
+            val = (self.n - 1)*(1/self.R1-1/self.R2)
+            print(val)
+            return 1/val                # return 1/f len
+        except ZeroDivisionError:
+            print("\n\tERROR! - Focal length set to infinity")
+            return np.infty
 
     def lens_type(self):
         """ Determine lens type based on radii of curvature """
@@ -131,19 +133,20 @@ class Object_or_Image ():
     name (str) : Name to indentify object
     x (float) : Position on x-axis where center of lens sits
     height (float) : height of object/image
+    n (int) : system image number (0 idx)
     --------------------------------
-
     """
-    def __init__(self,name,x,height):
+    def __init__(self,name,x,height,n):
         """ Initialize Object\Image Class Object """
-        self.name = name            # name of object
-        self.x = x                  # position of object/image
-        self.h = height             # height of object/image
+        self.name = name                # name of object
+        self.x = x                      # position of object/image
+        self.h = height                 # height of object/image
+        self.num = n                    # object number
+        self.type = self.image_type()   #  type of image
 
     def image_type (self):
         """ Determine if image is real or virtual """
-        pass
-
+        return None
 
             #### FUNCTION DEFINTIONS ####
 
@@ -157,12 +160,22 @@ def Print_System_Lenses (lenses):
         print("================================")
         print("Component Number: "+str(I+1))
         print("\tName:",lenses[I].name)
-        print("\tComponent type:",lenses[I].type+" lens")
+        print("\tComponent type:",lenses[I].type,"lens")
         print("\tX-Axis Postion:",lenses[I].x)
         print("\t1st Curvature radius:",lenses[I].R1)
         print("\t2nd Curvature radius:",lenses[I].R2)
         print("\tFocal length:",lenses[I].f)
         print("")
+
+def Print_System_Object (object):
+    """ Print Object Parameters for a single object """
+    print("================================")
+    print("Object Number: ",object.num)
+    print("\tName:",object.name)
+    print("\tImage type:",object.type)
+    print("\tX-Axis Postion:",object.x)
+    print("\tImage Height:",object.h)
+    print("")
 
  
 def Plot_System (lenses,objects,title,save=False,show=False):
@@ -198,6 +211,7 @@ def Plot_System (lenses,objects,title,save=False,show=False):
     xmax = np.max([x.x for x in comps])+10
 
     plt.hlines(y=0,xmin=xmin,xmax=xmax,color='black')
+    plt.tight_layout()
     plt.legend()
     plt.grid()
     if save == True:
