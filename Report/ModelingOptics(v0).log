@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2019.7.26)  21 OCT 2019 10:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2019.7.26)  25 OCT 2019 12:08
 entering extended mode
 **./ModelingOptics(v0).tex
 (ModelingOptics(v0).tex
@@ -307,10 +307,10 @@ This may cause the page layout to be inconsistent, however.
 <Simple_Optical_System_1.png, id=27, 1445.4pt x 578.16pt>
 File: Simple_Optical_System_1.png Graphic file (type png)
 <use Simple_Optical_System_1.png>
-Package pdftex.def Info: Simple_Optical_System_1.png  used on input line 221.
+Package pdftex.def Info: Simple_Optical_System_1.png  used on input line 218.
 (pdftex.def)             Requested size: 491.4295pt x 196.5718pt.
 
-Overfull \hbox (19.39827pt too wide) in paragraph at lines 221--222
+Overfull \hbox (19.39827pt too wide) in paragraph at lines 218--219
  [] 
  []
 
@@ -318,10 +318,10 @@ Overfull \hbox (19.39827pt too wide) in paragraph at lines 221--222
 <Simple_Optical_System_2.png, id=33, 1445.4pt x 578.16pt>
 File: Simple_Optical_System_2.png Graphic file (type png)
 <use Simple_Optical_System_2.png>
-Package pdftex.def Info: Simple_Optical_System_2.png  used on input line 254.
+Package pdftex.def Info: Simple_Optical_System_2.png  used on input line 251.
 (pdftex.def)             Requested size: 491.4295pt x 196.5718pt.
 
-Overfull \hbox (19.39827pt too wide) in paragraph at lines 254--255
+Overfull \hbox (19.39827pt too wide) in paragraph at lines 251--252
  [] 
  []
 
@@ -347,7 +347,7 @@ andon/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb
 /cm/cmsy10.pfb><C:/Users/Landon/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/p
 ublic/amsfonts/cm/cmti12.pfb><C:/Users/Landon/AppData/Local/Programs/MiKTeX 2.9
 /fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on ModelingOptics(v0).pdf (8 pages, 253059 bytes).
+Output written on ModelingOptics(v0).pdf (8 pages, 252926 bytes).
 PDF statistics:
  74 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
